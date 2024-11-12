@@ -1,0 +1,6 @@
+// rough work for app
+
+- authController - /login /register /refresh -> All Post
+- userController - /:id -> Delete and GET
+- todoController - get todos, put todo, delete todos, post todo
+
