@@ -24,4 +24,11 @@ const todoSchema = new mongoose.Schema({
   },
 });
 
+todoSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    ret.id = ret._id.toString();
+    delete ret._id;
+  },
+});
 module.exports = mongoose.model('Todo', todoSchema);

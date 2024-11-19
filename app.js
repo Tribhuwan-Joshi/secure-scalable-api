@@ -17,7 +17,7 @@ mongoose
   });
 
 app.use(express.json());
-app.use('/api/auth', authController);
+// app.use('/api/auth', authController);
 app.use('/api/users', userController);
 app.use('/api/todos', todoController);
 app.use('*', middlewares.unknownEndpoint);

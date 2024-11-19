@@ -4,3 +4,12 @@
 - userController - /:id -> Delete and GET
 - todoController - get todos, put todo, delete todos, post todo
 
+
+// setup DB fns for todos
+on the backend attach user with req
+ -> req.user._id/username etc
+
+
+19/11 4:26pm
+- create user register and login route
+- check post crud operation 
