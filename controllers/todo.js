@@ -26,10 +26,10 @@ todoRouter.delete('/:id', async (req, res) => {
   const id = req.params.id;
   const todo = await getTodo(id);
   if (!todo) return res.status(404).json({ message: 'todo not found' });
-  if (todo._id != req.user._id)
+  if (todo.user._id != req.user.id)
     return res.status(403).json({ message: 'forbidden' });
   await deleteTodo(id);
-  res.status(204);
+  res.sendStatus(204);
 });
 
 todoRouter.put('/:id', async (req, res) => {

@@ -4,7 +4,10 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('./config');
 
-const getTodos = async (page, limit) => {};
+const getTodos = async (page, limit) => {
+  const todos = await Todo.find();
+  return todos;
+};
 
 const getTodo = async (id) => {
   const todo = await Todo.findById(id).populate('user');
