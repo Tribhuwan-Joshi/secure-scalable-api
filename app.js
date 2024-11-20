@@ -6,6 +6,7 @@ const authController = require('./controllers/auth');
 const userController = require('./controllers/user');
 const todoController = require('./controllers/todo');
 const middlewares = require('./utils/middlewares');
+require('express-async-errors');
 
 mongoose
   .connect(config.MONGODB_URI)
@@ -17,9 +18,10 @@ mongoose
   });
 
 app.use(express.json());
-// app.use('/api/auth', authController);
+
+app.use('/api/auth', authController);
 app.use('/api/users', userController);
-app.use('/api/todos', todoController);
+app.use('/api/todos', middlewares.extractUser, todoController);
 app.use('*', middlewares.unknownEndpoint);
 app.use(middlewares.errorHandler);
 

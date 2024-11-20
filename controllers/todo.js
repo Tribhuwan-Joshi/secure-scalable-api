@@ -10,7 +10,7 @@ const todoRouter = require('express').Router();
 
 todoRouter.get('/', async (req, res) => {
   const todos = await getTodos();
-  return todos;
+  res.status(200).json({ todos });
 });
 
 todoRouter.post('/', async (req, res) => {
@@ -18,8 +18,8 @@ todoRouter.post('/', async (req, res) => {
   if (!title || !description) {
     return res.status(400).json({ message: 'Provide proper input values' });
   }
-  const newTodo = await createTodo(title, description);
-  return res.status(201).json(newTodo);
+  const newTodo = await createTodo(title, description, req.user.id);
+  return res.status(201).json({ newTodo });
 });
 
 todoRouter.delete('/:id', async (req, res) => {
@@ -39,10 +39,13 @@ todoRouter.put('/:id', async (req, res) => {
     return res.status(400).json({ message: 'Provide proper input values' });
   }
   const todo = await getTodo(id);
+
   if (!todo) return res.status(404).json({ message: 'todo not found' });
-  if (todo._id != req.user._id)
+  console.log(todo.user._id, req.user);
+  if (todo.user._id.toString() != req.user.id)
     return res.status(403).json({ message: 'forbidden' });
-  const updatedTodo = await updateTodo(id);
-  res.status(204).json(updatedTodo);
+  const updatedTodo = await updateTodo(title, description, id);
+
+  res.status(201).json(updatedTodo);
 });
 module.exports = todoRouter;

@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: function (v) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
       },
     },
   },

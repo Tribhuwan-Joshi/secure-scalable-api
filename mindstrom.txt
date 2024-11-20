@@ -13,3 +13,7 @@ on the backend attach user with req
 19/11 4:26pm
 - create user register and login route
 - check post crud operation 
+
+- rate limiting
+- error handling
+- testing
