@@ -3,6 +3,7 @@ const Todo = require('../models/todo');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('./config');
+require('express-async-errors');
 
 const getTodos = async (page, limit) => {
   const todos = await Todo.find();
@@ -50,7 +51,7 @@ const getUser = async (email) => {
 };
 
 const signToken = (payload) => {
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '10d' });
   return token;
 };
 

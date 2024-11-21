@@ -1,7 +1,11 @@
 const authRouter = require('express').Router();
+
 const bcrypt = require('bcrypt');
 const { createUser, getUser, signToken } = require('../utils/db');
-
+authRouter.post('/test-error', async (req, res) => {
+  console.log('here');
+  throw new Error('This is a test error');
+});
 authRouter.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
