@@ -2,10 +2,7 @@ const authRouter = require('express').Router();
 
 const bcrypt = require('bcrypt');
 const { createUser, getUser, signToken } = require('../utils/db');
-authRouter.post('/test-error', async (req, res) => {
-  console.log('here');
-  throw new Error('This is a test error');
-});
+
 authRouter.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
@@ -13,7 +10,13 @@ authRouter.post('/register', async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const token = await createUser(email, username, hashedPassword); // return new User with token
+  const { token, refreshToken } = await createUser(
+    email,
+    username,
+    hashedPassword
+  ); // return new User with token
+  res.cookie('refreshToken', refreshToken, { httpOnly: true }); // remove secure for now
+
   res.status(201).json({ token });
 });
 
@@ -31,7 +34,8 @@ authRouter.post('/login', async (req, res) => {
   if (!passwordMatched)
     return res.status(401).json({ message: 'Invalid  password' });
 
-  const token = signToken({ id: user._id });
+  const { token, refreshToken } = signToken({ id: user._id });
+  res.cookie('refreshToken', refreshToken, { httpOnly: true }); // remove secure for now
   return res.status(200).json({ token });
 });
 

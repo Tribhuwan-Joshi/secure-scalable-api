@@ -4,10 +4,46 @@ const extractUser = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ message: 'unauthorized' });
-  const user = jwt.verify(token, config.JWT_SECRET);
+  req.tokenExpired = false;
+  jwt.verify(token, config.JWT_SECRET, (err, decode) => {
+    if (err.name == 'TokenExpiredError') {
+      req.tokenExpired = true;
+      return;
+    }
+    if (err) throw err;
+    req.user = decode;
+  });
   // console.log('user extracted ', user);
-  req.user = user;
+
   next();
+};
+
+const refreshAccessToken = async (req, res, next) => {
+  if (req.tokenExpired) {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken)
+      return res.status(401).json({ message: 'Refresh token required' });
+
+    jwt.verify(refreshToken, config.REFRESH_SECRET, (err, user) => {
+      if (err)
+        return res.status(403).json({ message: 'Invalid refresh token' });
+
+      const newAccessToken = jwt.sign({ id: user.id }, config.JWT_SECRET, {
+        expiresIn: '15m',
+      });
+
+      const newRefreshToken = jwt.sign({ id: user.id }, config.REFRESH_SECRET, {
+        expiresIn: '7d',
+      });
+
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+      });
+
+      res.json({ token: newAccessToken });
+    });
+    // create new access token and refresh token and send it in json
+  } else return next();
 };
 
 const unknownEndpoint = (req, res) => {
@@ -35,4 +71,9 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-module.exports = { unknownEndpoint, errorHandler, extractUser };
+module.exports = {
+  unknownEndpoint,
+  errorHandler,
+  extractUser,
+  refreshAccessToken,
+};

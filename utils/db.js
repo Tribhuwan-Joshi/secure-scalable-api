@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Todo = require('../models/todo');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('./config');
+const { JWT_SECRET, REFRESH_SECRET } = require('./config');
 require('express-async-errors');
 
 const getTodos = async (page, limit) => {
@@ -51,8 +51,9 @@ const getUser = async (email) => {
 };
 
 const signToken = (payload) => {
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '10d' });
-  return token;
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
+  const refreshToken = jwt.sign(payload, REFRESH_SECRETs, { expiresIn: '7d' });
+  return { token, refreshToken };
 };
 
 module.exports = {
