@@ -10,7 +10,7 @@ const todoRouter = require('express').Router();
 
 todoRouter.get('/', async (req, res) => {
   let { page, limit } = req.query;
-  page = page || 0;
+  page = page || 1;
   limit = limit || 10;
 
   const todos = await getTodos(page, limit);

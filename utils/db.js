@@ -6,7 +6,7 @@ const { JWT_SECRET, REFRESH_SECRET } = require('./config');
 require('express-async-errors');
 
 const getTodos = async (page, limit) => {
-  const s = page * limit;
+  const s = (page - 1) * limit;
   const todos = await Todo.find().sort({ createdAt: -1 }).skip(s).limit(limit);
   return todos;
 };
