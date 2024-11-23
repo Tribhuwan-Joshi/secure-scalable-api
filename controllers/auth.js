@@ -16,7 +16,6 @@ authRouter.post('/register', async (req, res) => {
     hashedPassword
   ); // return new User with token
   res.cookie('refreshToken', refreshToken, { httpOnly: true }); // remove secure for now
-
   res.status(201).json({ token });
 });
 

@@ -1,10 +1,9 @@
 const userRouter = require('express').Router();
-const Todo = require('../models/todo');
-const User = require('../models/user');
-
+const { getAllUsers } = require('../utils/db');
 userRouter.get('/', async (req, res) => {
-  const users = await getUsers();
-  return users;
+  const users = await getAllUsers();
+
+  res.json({ users });
 });
 
 module.exports = userRouter;

@@ -6,7 +6,8 @@ const { JWT_SECRET, REFRESH_SECRET } = require('./config');
 require('express-async-errors');
 
 const getTodos = async (page, limit) => {
-  const todos = await Todo.find();
+  const s = page * limit;
+  const todos = await Todo.find().sort({ createdAt: -1 }).skip(s).limit(limit);
   return todos;
 };
 
@@ -40,8 +41,8 @@ const deleteTodo = async (id) => {
 const createUser = async (email, username, hashedPassword) => {
   const newUser = new User({ email, hashedPassword, username });
   await newUser.save();
-  const token = signToken({ id: newUser._id });
-  return token;
+  const { token, refreshToken } = signToken({ id: newUser._id });
+  return { token, refreshToken };
 };
 
 const getUser = async (email) => {
@@ -52,8 +53,13 @@ const getUser = async (email) => {
 
 const signToken = (payload) => {
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
-  const refreshToken = jwt.sign(payload, REFRESH_SECRETs, { expiresIn: '7d' });
+  const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' });
   return { token, refreshToken };
+};
+
+const getAllUsers = async () => {
+  const users = await User.find({});
+  return users;
 };
 
 module.exports = {
@@ -64,5 +70,6 @@ module.exports = {
   deleteTodo,
   createUser,
   getUser,
+  getAllUsers,
   signToken,
 };

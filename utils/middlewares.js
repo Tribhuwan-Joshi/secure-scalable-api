@@ -6,7 +6,7 @@ const extractUser = async (req, res, next) => {
   if (!token) return res.status(401).json({ message: 'unauthorized' });
   req.tokenExpired = false;
   jwt.verify(token, config.JWT_SECRET, (err, decode) => {
-    if (err.name == 'TokenExpiredError') {
+    if (err && err.name == 'TokenExpiredError') {
       req.tokenExpired = true;
       return;
     }

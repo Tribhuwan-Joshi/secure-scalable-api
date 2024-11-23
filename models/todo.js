@@ -22,6 +22,10 @@ const todoSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 todoSchema.set('toJSON', {
