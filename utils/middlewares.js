@@ -32,14 +32,6 @@ const refreshAccessToken = async (req, res, next) => {
         expiresIn: '15m',
       });
 
-      const newRefreshToken = jwt.sign({ id: user.id }, config.REFRESH_SECRET, {
-        expiresIn: '7d',
-      });
-
-      res.cookie('refreshToken', newRefreshToken, {
-        httpOnly: true,
-      });
-
       res.json({ token: newAccessToken });
     });
     // create new access token and refresh token and send it in json
