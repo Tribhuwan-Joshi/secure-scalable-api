@@ -13,10 +13,10 @@
 ## Tech Stack
 
 - **Node.js** and **Express.js**
-- **Redis** for rate limiting
+- **Redis** for rate limiting -> used sliding window algorithm
 - **MongoDB** for data persistence
 - **JWT** for token-based authentication
-- **Supertest** for API testing
+
 
 ## API Endpoints
 
@@ -33,10 +33,4 @@
 - `PUT /api/todo/:id` - Update todo by ID
 - `DELETE /api/todo/:id` - Delete todo by ID
 
-## Testing
 
-Testing is set up with **Supertest** to ensure API endpoints work as expected.
-
-To run tests, use:
-```bash
-npm test
