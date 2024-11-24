@@ -3,7 +3,6 @@ const config = require('./config');
 const redis = require('./redisClient');
 
 const extractUser = async (req, res, next) => {
-  console.log(req.url);
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ message: 'unauthorized' });
@@ -66,15 +65,57 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-const authRateLimiter = async (req, res, next) => {};
+const rateLimtier = async (req, res, next) => {
+  const timeWindow = config.timeWindow || 60000;
+  const reqLimit = config.reqLimit || 10;
+  const key = req.url + req.ip;
+  const reqRange = Date.now() - timeWindow;
 
-const crudRateLimtier = async (req, res, next) => {};
+  try {
+    const timestamps = await redis.lrange(key, 0, -1);
+    const currentTime = Date.now();
+
+    const recentRequests = timestamps.filter((timestamp) => {
+      return parseInt(timestamp) >= reqRange;
+    });
+
+    if (recentRequests.length >= reqLimit) {
+      const waitTime = Math.ceil(
+        timeWindow - (currentTime - parseInt(recentRequests[0]))
+      );
+      console.log(
+        currentTime,
+        recentRequests[0],
+        waitTime,
+        timeWindow - (currentTime - recentRequests[0])
+      );
+      return res.status(429).json({
+        message: 'Too many requests',
+        waitTime: Math.ceil(waitTime / 1000), // Convert to seconds
+      });
+    }
+
+    await redis.rpush(key, currentTime);
+    await redis.expire(key, Math.ceil(timeWindow / 1000));
+  } catch (error) {
+    console.error('Rate limiting error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+
+  // get all the req from that key filter by time greater than or equal to reqRange
+
+  // if reqRange count is greater than reqLimit -> send 429 in res.json()-> too many request
+  // least amount of time to wait before eligible for request -> greatest time(after fliter) - reqRange
+
+  // if reqRange is less -> add current time -> Date.now() to list of the key and proceed
+
+  next();
+};
 
 module.exports = {
   unknownEndpoint,
   errorHandler,
   extractUser,
   refreshAccessToken,
-  authRateLimiter,
-  crudRateLimtier,
+  rateLimtier,
 };
