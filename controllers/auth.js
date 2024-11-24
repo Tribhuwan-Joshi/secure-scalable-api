@@ -38,4 +38,8 @@ authRouter.post('/login', async (req, res) => {
   return res.status(200).json({ token });
 });
 
+authRouter.post('/logout', middlewares.extractUser, (req, res) => {
+  res.clearCookie('refreshToken');
+  res.sendStatus(204);
+});
 module.exports = authRouter;
