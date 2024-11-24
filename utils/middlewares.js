@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const config = require('./config');
+const redis = require('./redisClient');
+
 const extractUser = async (req, res, next) => {
+  console.log(req.url);
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ message: 'unauthorized' });
@@ -63,9 +66,15 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
+const authRateLimiter = async (req, res, next) => {};
+
+const crudRateLimtier = async (req, res, next) => {};
+
 module.exports = {
   unknownEndpoint,
   errorHandler,
   extractUser,
   refreshAccessToken,
+  authRateLimiter,
+  crudRateLimtier,
 };

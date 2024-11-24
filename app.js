@@ -20,19 +20,11 @@ mongoose
 
 app.use(express.json());
 app.use(cookieParser());
-app.use('/api/auth', authController);
-app.use(
-  '/api/users',
-  middlewares.extractUser,
-  middlewares.refreshAccessToken,
-  userController
-);
-app.use(
-  '/api/todos',
-  middlewares.extractUser,
-  middlewares.refreshAccessToken,
-  todoController
-);
+app.use('/api/auth', middlewares.authRateLimiter, authController);
+app.use(middlewares.extractUser, middlewares.refreshAccessToken);
+app.use(middlewares.crudRateLimtier);
+app.use('/api/users', userController);
+app.use('/api/todos', todoController);
 
 app.use('*', middlewares.unknownEndpoint);
 app.use(middlewares.errorHandler);
